@@ -2138,7 +2138,10 @@ runIntro=async function(){
 </script>
 <style>
 /* ===== intro v4: diamond shards cascade down and funnel into the logo ===== */
-#inew #icv{left:0;top:0;width:100%;height:100%}
+#inew #icv,#inew #ibg{left:0;top:0;width:100%;height:100%}
+#inew #ibg{background:radial-gradient(circle calc(max(100vw,100vh)*.9) at 40% 10%,#1d2130,rgba(15,17,22,0)),#0f1116;opacity:0}
+#inew.go2 #ibg{animation:ibgin 500ms ease-out both}
+@keyframes ibgin{to{opacity:1}}
 :root{--IF:clamp(56px,9vmin,110px)}
 #inew #iword{font-weight:600;letter-spacing:-.03em}
 #inew.go2 #iword span{animation:iw2 800ms cubic-bezier(.2,.8,.2,1) both}
@@ -2151,14 +2154,17 @@ runIntro=async function(){
 const N=document.getElementById('inew');if(!N)return;
 const CH=1950,NS=56;
 const cl=x=>Math.max(0,Math.min(1,x)),eo=x=>1-Math.pow(1-x,3),ob=x=>{const c=1.70158;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)};
+const bz=(x1,y1,x2,y2)=>{const A=(a,b)=>1-3*b+3*a,B=(a,b)=>3*b-6*a,C=a=>3*a,F=(t,a,b)=>((A(a,b)*t+B(a,b))*t+C(a))*t,D=(t,a,b)=>3*A(a,b)*t*t+2*B(a,b)*t+C(a);return x=>{if(x<=0)return 0;if(x>=1)return 1;let t=x;for(let i=0;i<8;i++){const e=F(t,x1,x2)-x,d=D(t,x1,x2);if(Math.abs(e)<1e-5||Math.abs(d)<1e-5)break;t-=e/d}return F(Math.max(0,Math.min(1,t)),y1,y2)}};
+const eY=bz(.5,.02,.12,1),eX=bz(.3,0,.1,1),eS=bz(.4,0,.15,1),ei=x=>x*x*(3-2*x);
+const rgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),lerpc=(a,b,t)=>`rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;
 const hh=n=>{const x=Math.sin(n*127.1+311.7)*43758.5453;return x-Math.floor(x)};
 function dm(c,x,y,s,r){c.save();c.translate(x,y);c.rotate(Math.PI/4);c.beginPath();c.roundRect(-s/2,-s/2,s,s,r);c.restore()}
 runIntro=async function(){
- const I=$('#intro'),G=$('#gate'),t0=performance.now();
+ const I=$('#intro'),G=$('#gate');let t0=performance.now();
  MM.up=1;setTimeout(()=>{MM.up=0},8000);
  const IF=Math.max(56,Math.min(110,Math.min(innerWidth,innerHeight)*.09)),IS=IF*.74,dpr=Math.min(2,devicePixelRatio||1);
  N.classList.remove('go2');
- N.innerHTML="<canvas id='icv'></canvas><div id='iword'></div><i id='iline'></i>";
+ N.innerHTML="<div id='ibg'></div><canvas id='icv'></canvas><div id='iword'></div><i id='iline'></i>";
  N.querySelector('#iword').innerHTML=[...'cascade'].map((c,i)=>`<span style="animation-delay:${2150+i*60}ms">${c}</span>`).join('');
  const cv=N.querySelector('#icv'),c=cv.getContext('2d');cv.width=innerWidth*dpr;cv.height=innerHeight*dpr;
  const W=innerWidth,H=innerHeight,cx=W/2,cy=H/2,hy=cy-.55*IF,still=document.documentElement.classList.contains('rm'),sp=Math.min(W*.24,300),u=IF/84;
@@ -2166,12 +2172,12 @@ runIntro=async function(){
  const n=6,SZ=IS,cs=SZ/n,TL=[],CY='#4fe3ff',PK='#ff5fa2';
  for(let i=0;i<n;i++)for(let j=0;j<n;j++){const u2=-SZ/2+cs*(i+.5),v2=-SZ/2+cs*(j+.5),x=cx+(u2-v2)*.7071,y=hy+(u2+v2)*.7071;TL.push({x,y,tc:mix(CY,PK,cl(((x-cx+.7*SZ)+(y-hy+.7*SZ))/(2.8*SZ)))})}
  TL.forEach((q,i)=>q.key=-q.y+hh(i+7)*SZ*.6);TL.sort((a,b)=>a.key-b.key);
- const TS=TL.map((q,i)=>{const r=hh(i+1),a=900+(i/TL.length)*1000+hh(i+17)*40,d=800+r*300;return{q,x0:cx+(hh(i+91)-.5)*2*sp,a,s:a-d,d,z:(2+r*2.5)*u,col:mix(CY,PK,hh(i+53))}});
- const ST=Array.from({length:22},(_,i)=>{const r=hh(i+201),a=850+(i/22)*1050,d=850+r*350;return{x0:cx+(hh(i+291)-.5)*2*sp,a,s:a-d,d,z:(2.2+r*3)*u,col:mix(CY,PK,hh(i+253))}});
+ const TS=TL.map((q,i)=>{const r=hh(i+1),a=950+(i/TL.length)*950+hh(i+17)*40,d=Math.min(a-80,1050+r*300),cs0=mix(CY,PK,hh(i+53));q.rc=rgb(q.tc);return{q,x0:cx+(hh(i+91)-.5)*2*sp,a,s:a-d,d,z:(2+r*2.5)*u,col:rgb(cs0),cs:cs0}});
+ const ST=Array.from({length:22},(_,i)=>{const r=hh(i+201),a=900+(i/22)*1000,d=Math.min(a-80,950+r*350);return{x0:cx+(hh(i+291)-.5)*2*sp,a,s:a-d,d,z:(2.2+r*3)*u,col:mix(CY,PK,hh(i+253))}});
   /* sound: each tile clicks into place (a tiny noise tick plus a short plastic tock, slightly different every time); one soft thunk when the logo locks */
  const m=AC.createGain();m.gain.value=.6*Math.max(.25,S.mv);const cp=AC.createDynamicsCompressor();cp.threshold.value=-10;cp.ratio.value=6;m.connect(cp);cp.connect(AC.destination);
  const nb=AC.createBuffer(1,AC.sampleRate*.5,AC.sampleRate),nd=nb.getChannelData(0);for(let i=0;i<nd.length;i++)nd[i]=Math.random()*2-1;
- const Tb=AC.currentTime-(performance.now()-t0)/1000;
+ const LEAD=60;t0=performance.now()+LEAD;const Tb=AC.currentTime+LEAD/1000;
  const snap=(T,x,v,big)=>{const pn=AC.createStereoPanner?AC.createStereoPanner():null;if(pn){pn.pan.value=Math.max(-1,Math.min(1,(x-cx)/(IS*.7)))*.5;pn.connect(m)}const out=pn||m;
   const ns=AC.createBufferSource();ns.buffer=nb;const bp=AC.createBiquadFilter();bp.type='bandpass';bp.frequency.value=big?900:2200+Math.random()*1400;bp.Q.value=1.1;
   const ng=AC.createGain();ng.gain.setValueAtTime(.0001,T);ng.gain.linearRampToValueAtTime(v*(big?.9:.55),T+.001);ng.gain.exponentialRampToValueAtTime(.0001,T+(big?.12:.03));
@@ -2194,42 +2200,117 @@ runIntro=async function(){
  let alive=true;
  function draw(t){
   c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
-  c.globalAlpha=cl(t/400);c.fillStyle='#0f1116';c.fillRect(0,0,W,H);
-  const gr=c.createRadialGradient(cx*.8,H*.1,0,cx*.8,H*.1,Math.max(W,H)*.9);gr.addColorStop(0,'#1d2130');gr.addColorStop(1,'rgba(15,17,22,0)');c.fillStyle=gr;c.fillRect(0,0,W,H);c.globalAlpha=1;
+  if(t<0)return;
   /* the gate's outline lifts to the landing spot and stays there as the target */
   const done=TS.filter(s=>t>=s.a).length/TS.length;
-  if(t<380){const k=eo(t/380);c.strokeStyle=`rgba(255,255,255,${.88-.68*k})`;c.lineWidth=2;dm(c,cx,cy+(hy-cy)*k,IS,IS*.18);c.stroke()}
-  else if(t<CH+300){const f=1-cl((t-CH)/300);c.globalAlpha=f;
-   const g2=c.createRadialGradient(cx,hy,0,cx,hy,IF*2.4);g2.addColorStop(0,`rgba(143,160,255,${.22*done})`);g2.addColorStop(1,'rgba(143,160,255,0)');c.fillStyle=g2;c.fillRect(cx-IF*3,hy-IF*3,IF*6,IF*6);
+  if(t<420){const k=ei(cl(t/420));c.strokeStyle=`rgba(255,255,255,${.88-.68*k})`;c.lineWidth=2;dm(c,cx,cy+(hy-cy)*k,IS,IS*.18);c.stroke()}
+  else if(t<CH+400){const f=1-ei(cl((t-CH)/400));c.globalAlpha=f;
+   const g2=c.createRadialGradient(cx,hy,0,cx,hy,IF*2.4);g2.addColorStop(0,`rgba(143,160,255,${.22*done*done})`);g2.addColorStop(1,'rgba(143,160,255,0)');c.fillStyle=g2;c.fillRect(cx-IF*3,hy-IF*3,IF*6,IF*6);
    c.strokeStyle=`rgba(255,255,255,${.15+.3*done})`;c.lineWidth=2;dm(c,cx,hy,IS,IS*.18);c.stroke();c.globalAlpha=1}
-  /* stray shards funnel to the centre and vanish; tile shards land and stay */
-  const P=(s,x1,y1,q)=>[s.x0+(x1-s.x0)*Math.pow(q,1.9),-20+(y1+20)*Math.pow(q,2.3)];
-  for(const s of ST){const k=(t-s.s)/s.d;if(k<=0||k>=1)continue;const[x,y]=P(s,cx,hy,k),[px,py]=P(s,cx,hy,Math.max(0,k-.07)),a=Math.min(1,k*5)*(k>.94?(1-k)/.06:1);
-   c.globalAlpha=a*.4;c.strokeStyle=s.col;c.lineWidth=Math.max(1,s.z*.35);c.lineCap='round';c.beginPath();c.moveTo(px,py);c.lineTo(x,y);c.stroke();
-   c.globalAlpha=a;c.fillStyle=s.col;dm(c,x,y,s.z*2,s.z*.35);c.fill()}
-  const ta=1-cl((t-CH-60)/220);
-  for(const s of TS){const q=s.q,k=(t-s.s)/s.d;if(k<=0)continue;
-   if(k<1){const[x,y]=P(s,q.x,q.y,k),[px,py]=P(s,q.x,q.y,Math.max(0,k-.07)),a=Math.min(1,k*5),z=s.z*2+(cs*.9-s.z*2)*k*k;
-    c.globalAlpha=a*.4;c.strokeStyle=s.col;c.lineWidth=Math.max(1,s.z*.35);c.lineCap='round';c.beginPath();c.moveTo(px,py);c.lineTo(x,y);c.stroke();
-    c.globalAlpha=a;c.fillStyle=mix(s.col,q.tc,eo(k));dm(c,x,y,z,cs*.12);c.fill()}
-   else{c.globalAlpha=ta;c.fillStyle=q.tc;dm(c,q.x,q.y,cs*.9,cs*.12);c.fill();const w=1-cl((t-s.a)/200);if(w>0){c.globalAlpha=ta*.55*w;c.fillStyle='#fff';c.fill()}}}
+  /* a shard glides: accelerates out of the top, then decelerates smoothly into its spot (no hard stop) */
+  const P=(s,x1,y1,k)=>[s.x0+(x1-s.x0)*eX(k),-20+(y1+20)*eY(k)];
+  const seam=ei(cl((t-(CH-350))/450)); /* tiles swell slightly so the mosaic closes into one solid shape */
+  c.lineCap='round';
+  for(const s of ST){const k=(t-s.s)/s.d;if(k<=0||k>=1)continue;const[x,y]=P(s,cx,hy,k),[px,py]=P(s,cx,hy,Math.max(0,k-.06)),a=Math.min(1,k*6)*(k>.8?(1-k)/.2:1);
+   c.globalAlpha=a*.32;c.strokeStyle=s.col;c.lineWidth=Math.max(1,s.z*.35);c.beginPath();c.moveTo(px,py);c.lineTo(x,y);c.stroke();
+   c.globalAlpha=a*.9;c.fillStyle=s.col;dm(c,x,y,s.z*2,s.z*.35);c.fill()}
+  const ta=1-ei(cl((t-CH-40)/320)),tsz=cs*(.9+.1*seam)+.6*seam;
+  /* landed tiles are clipped to the logo's rounded diamond so the corner tiles share its round corners */
+  c.save();dm(c,cx,hy,IS,IS*.18);c.clip();
+  for(const s of TS){const q=s.q;if(t<s.a)continue;
+   c.globalAlpha=ta;c.fillStyle=q.tc;dm(c,q.x,q.y,tsz,cs*.12);c.fill();const w=1-ei(cl((t-s.a)/380));if(w>0){c.globalAlpha=ta*.4*w;c.fillStyle='#fff';c.fill()}}
+  c.restore();
+  for(const s of TS){const q=s.q,k=(t-s.s)/s.d;if(k<=0||k>=1)continue;
+   const[x,y]=P(s,q.x,q.y,k),[px,py]=P(s,q.x,q.y,Math.max(0,k-.05)),a=Math.min(1,k*6),z=s.z*2+(tsz-s.z*2)*eS(k);
+   c.globalAlpha=a*.4*(1-k);c.strokeStyle=s.cs;c.lineWidth=Math.max(1,s.z*.35);c.beginPath();c.moveTo(px,py);c.lineTo(x,y);c.stroke();
+   c.globalAlpha=a;c.fillStyle=lerpc(s.col,q.rc,eS(k));dm(c,x,y,z,cs*.12);c.fill()}
   c.globalAlpha=1;
-  /* chord: the logo diamond pops in, one thin ring, a faint flash */
-  if(t>CH){const p=cl((t-CH-60)/420),s=IS*ob(p),dg=c.createLinearGradient(cx-s*.7,hy-s*.7,cx+s*.7,hy+s*.7);dg.addColorStop(0,'#4fe3ff');dg.addColorStop(1,'#ff5fa2');
-   c.fillStyle=dg;dm(c,cx,hy,s,s*.18);c.fill();
-   const q=cl((t-CH)/900);if(q>0&&q<1){c.save();c.globalAlpha=.6*(1-q);c.strokeStyle=dg;c.lineWidth=2*(1-q)+.5;dm(c,cx,hy,IS*(1+eo(q)*3.4),IS*.18);c.stroke();c.restore()}
-   const f=cl(1-(t-CH)/300);if(f>0){c.fillStyle=`rgba(255,255,255,${.09*f})`;c.fillRect(0,0,W,H)}}
+  /* chord: the solid logo fades in over the closed mosaic with a gentle settle, one thin ring, a faint flash */
+  if(t>CH-200){const fa=ei(cl((t-(CH-200))/380)),p=cl((t-CH)/700),s=IS*(1+.05*Math.sin(Math.PI*eS(p))),dg=c.createLinearGradient(cx-s*.7,hy-s*.7,cx+s*.7,hy+s*.7);dg.addColorStop(0,'#4fe3ff');dg.addColorStop(1,'#ff5fa2');
+   c.globalAlpha=fa;c.fillStyle=dg;dm(c,cx,hy,s,s*.18);c.fill();c.globalAlpha=1;
+   const q=cl((t-CH)/1100);if(q>0&&q<1){c.save();c.globalAlpha=.55*(1-q);c.strokeStyle=dg;c.lineWidth=2*(1-q)+.5;dm(c,cx,hy,IS*(1+eS(q)*3.4),IS*.18);c.stroke();c.restore()}
+   const f=t>CH?cl(1-(t-CH)/400):0;if(f>0){c.fillStyle=`rgba(255,255,255,${.08*f})`;c.fillRect(0,0,W,H)}}
  }
  let sk;const skp=new Promise(r=>sk=r),Wt=ms=>Promise.race([wait(ms),skp]);skp.then(()=>m.gain.setTargetAtTime(0,AC.currentTime,.04));
  I.onclick=()=>{if(performance.now()-t0>600)sk()};
  G.style.display='none';I.className='';I.style.display='flex';
  (function fr(){if(!alive)return;draw(performance.now()-t0);requestAnimationFrame(fr)})();
- void N.offsetWidth;N.classList.add('go2');
+ void N.offsetWidth;await new Promise(r=>requestAnimationFrame(r));t0=performance.now()+(Tb-AC.currentTime)*1000;N.classList.add('go2');
  await Wt(still?900:3300);
  const M=$('#menu');M.classList.add('enter');I.classList.add('out');mmPlay(cur);
  await wait(900);alive=false;I.style.display='none';I.onclick=null;
  await wait(500);M.classList.remove('enter');
 };
+})();
+</script>
+<style>
+.xrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.xrow .zbtn{margin:0}
+#xtoast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);z-index:99;background:#1c1f27;color:#e8eaf0;border:1px solid #ffffff26;border-radius:8px;padding:10px 18px;font:600 13px 'Inter',system-ui,sans-serif;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:80vw;text-align:center}
+#xtoast.on{opacity:1;transform:translate(-50%,0)}
+</style>
+<script>
+/* ===== export levels: .osz (song + every chart) and single charts (.osu); re-import with the normal Import button or by dropping the file ===== */
+(()=>{
+const CT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc=u=>{let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CT[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+const enc=new TextEncoder();
+function zip(files){/* stored (uncompressed) zip: fast and fine for already-compressed audio */
+ const parts=[],cen=[];let off=0;
+ for(const f of files){const nm=enc.encode(f.name),d=f.data,cr=crc(d),h=new DataView(new ArrayBuffer(30));
+  h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(8,0,true);h.setUint16(10,0,true);h.setUint16(12,0x21,true);
+  h.setUint32(14,cr,true);h.setUint32(18,d.length,true);h.setUint32(22,d.length,true);h.setUint16(26,nm.length,true);h.setUint16(28,0,true);
+  parts.push(h.buffer,nm,d);
+  const c=new DataView(new ArrayBuffer(46));c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(10,0,true);c.setUint16(12,0,true);c.setUint16(14,0x21,true);
+  c.setUint32(16,cr,true);c.setUint32(20,d.length,true);c.setUint32(24,d.length,true);c.setUint16(28,nm.length,true);c.setUint32(42,off,true);
+  cen.push(c.buffer,nm);off+=30+nm.length+d.length}
+ let cl=0;for(const x of cen)cl+=x.byteLength;
+ const e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cl,true);e.setUint32(16,off,true);
+ return new Blob([...parts,...cen,e.buffer],{type:'application/zip'})}
+const clean=v=>String(v==null?'':v).replace(/[\r\n]+/g,' ').trim();
+const fname=v=>clean(v).replace(/[\\/:*?"<>|]+/g,'_').replace(/^\.+/,'').slice(0,90)||'untitled';
+function sniffAudio(u){const a=String.fromCharCode(...u.subarray(0,4)),b=String.fromCharCode(...u.subarray(8,12)),c=String.fromCharCode(...u.subarray(4,8));
+ if(a=='OggS')return'ogg';if(a=='fLaC')return'flac';if(a=='RIFF'&&b=='WAVE')return'wav';if(c=='ftyp')return'm4a';return'mp3'}
+function sniffImg(u){return u[0]==0x89&&u[1]==0x50?'png':'jpg'}
+function osuText(s,d,audio,bg){
+ const K=d.keys,L=['osu file format v14','','[General]','AudioFilename: '+audio,'AudioLeadIn: 0','PreviewTime: -1','Countdown: 0','SampleSet: Soft','StackLeniency: 0.7','Mode: 3','LetterboxInBreaks: 0','SpecialStyle: 0','WidescreenStoryboard: 0','',
+ '[Editor]','DistanceSpacing: 1','BeatDivisor: 4','GridSize: 4','TimelineZoom: 1','',
+ '[Metadata]','Title:'+clean(s.title),'TitleUnicode:'+clean(s.title),'Artist:'+clean(s.artist),'ArtistUnicode:'+clean(s.artist),'Creator:'+clean(s.creator),'Version:'+clean(d.ver),'Source:'+clean(d.source||''),'Tags:cascade','BeatmapID:0','BeatmapSetID:-1','',
+ '[Difficulty]','HPDrainRate:5','CircleSize:'+K,'OverallDifficulty:'+(d.od??5),'ApproachRate:5','SliderMultiplier:1.4','SliderTickRate:1','',
+ '[Events]','//Background and Video events'];
+ if(bg)L.push('0,0,"'+bg+'",0,0');
+ L.push('','[TimingPoints]');if(d.bpm>0)L.push('0,'+(60000/d.bpm).toFixed(6)+',4,2,0,50,1,0');
+ L.push('','[HitObjects]');
+ for(const n of d.notes){const t=Math.round(n.t),x=Math.floor((n.col+.5)*512/K);
+  L.push(n.e&&n.e>n.t?`${x},192,${t},128,0,${Math.round(n.e)}:0:0:0:0:`:`${x},192,${t},1,0,0:0:0:0:`)}
+ return L.join('\r\n')+'\r\n'}
+function save(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+let tt;function toast(m){let e=document.getElementById('xtoast');if(!e){e=document.createElement('div');e.id='xtoast';document.body.appendChild(e)}e.textContent=m;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),3800)}
+const base=s=>fname((s.artist&&s.artist!='Imported audio'?s.artist+' - ':'')+s.title);
+async function exportSet(s){
+ try{
+  if(!s||!s.diffs.length){toast('Nothing to export yet.');return}
+  const files=[];let an=null,bn=null,note='';
+  if(s.abuf){const u=new Uint8Array(s.abuf);an='audio.'+sniffAudio(u);files.push({name:an,data:u})}else note=' (this song has no audio file, so only the charts were exported)';
+  if(s.bg){try{const u=new Uint8Array(await(await(await fetch(s.bg)).blob()).arrayBuffer());bn='bg.'+sniffImg(u);files.push({name:bn,data:u})}catch(e){}}
+  const used=new Set();
+  for(const d of s.diffs){let nm=fname(`${s.artist} - ${s.title} (${s.creator}) [${d.ver}]`)+'.osu',i=2;while(used.has(nm))nm=nm.replace(/(\.osu)$/,' '+(i++)+'$1');used.add(nm);
+   files.push({name:nm,data:enc.encode(osuText(s,d,an||'',bn))})}
+  save(zip(files),base(s)+'.osz');toast(`Exported ${s.diffs.length} chart${s.diffs.length>1?'s':''} as .osz${note}`)
+ }catch(e){toast('Export failed: '+e.message)}}
+function exportChart(s,d){
+ try{let an='',bn='';if(s.abuf)an='audio.'+sniffAudio(new Uint8Array(s.abuf,0,12));
+  save(new Blob([osuText(s,d,an,'')],{type:'text/plain'}),fname(`${s.artist} - ${s.title} (${s.creator}) [${d.ver}]`)+'.osu');toast('Exported chart as .osu (import it onto a song with the same title and artist)')}catch(e){toast('Export failed: '+e.message)}}
+window.cascadeExport={exportSet,exportChart,zip,osuText};
+/* add the buttons to the song panel */
+const _di=drawInfo;
+drawInfo=function(){_di.apply(this,arguments);
+ const I=document.getElementById('info');if(!I||!cur||!cur.diffs.length||I.querySelector('.xrow'))return;
+ const host=I.querySelector('.zbody')||I,r=document.createElement('div');r.className='xrow';
+ r.innerHTML="<button class='zbtn' id='xset' title='Song, background and every chart in one .osz file'>Export level (.osz)</button><button class='zbtn' id='xch' title='Just the selected chart'>Export this chart (.osu)</button>";
+ host.appendChild(r);
+ r.querySelector('#xset').onclick=()=>exportSet(cur);
+ r.querySelector('#xch').onclick=()=>exportChart(cur,cur.diffs[Math.min(curD,cur.diffs.length-1)])};
+try{if(typeof render=='function'&&scr=='sel')render()}catch(e){}
 })();
 </script>
 </body></html>
